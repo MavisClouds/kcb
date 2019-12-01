@@ -4,9 +4,10 @@ class puzzle
 {
 	public : 
 	
-	int sttpuzzle [4][4][4] = {{{5,1,3,4},{2,0,7,8},{9,6,10,12},{13,14,11,15}}};
-	int temppuzzle [4][4][4];
-	int beforepuzzle[4][4];
+	int sttpuzzle [4][4] = {{5,1,3,4},{2,0,7,8},{9,6,10,12},{13,14,11,15}};
+	int temppuzzle [4][4];
+	int multchildpuzzle[100][4][4];
+	int sutemp[4][4];
 	int endpuzzle [4][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};
 	int zeroposx,zeroposy;
 	int child = 0;
@@ -23,7 +24,7 @@ class puzzle
 		{
 			for ( x = 0; x <= 3; x++ )
 			{
-				printf("| %i |",sttpuzzle[sttchild][y][x]);
+				printf("| %i |",sttpuzzle[y][x]);
 			}
 		
 			printf("\n");
@@ -34,12 +35,12 @@ class puzzle
 	void createtemppuzzle()
 	{
 		int x,y;
-	printf("%i",child);
+
 		for ( y = 0; y <= 3; y++ )
 		{
 			for ( x = 0; x <= 3; x++ )
 			{
-				printf("| %i |",temppuzzle[child][y][x]);
+				printf("| %i |",temppuzzle[y][x]);
 			}
 		
 			printf("\n");
@@ -52,7 +53,7 @@ class puzzle
 		{
 			for (int j = 0; j<=3; j++)
 			{
-				if(sttpuzzle[sttchild][i][j] == 0)
+				if(sttpuzzle[i][j] == 0)
 				{
 					zeroposx = j; 
 					zeroposy = i;
@@ -67,7 +68,18 @@ class puzzle
 		{
 			for (int j = 0; j<=3; j++)
 			{
-				temppuzzle[child][i][j] = sttpuzzle[sttchild][i][j];
+				temppuzzle[i][j] = sttpuzzle[i][j];
+			}
+		}
+	}
+	
+	void generatestt ()
+	{
+		for (int i = 0; i<=3; i++)
+		{
+			for (int j = 0; j<=3; j++)
+			{
+				sttpuzzle[i][j] = temppuzzle[i][j];
 			}
 		}
 	}
@@ -78,7 +90,7 @@ class puzzle
 		{
 			for (int j = 0; j<=3; j++)
 			{
-			 sttpuzzle[sttchild][i][j] = temppuzzle[child][i][j];
+			 sttpuzzle[i][j] = temppuzzle[i][j];
 			}
 		}
 	}
@@ -87,8 +99,8 @@ class puzzle
 	{
 		int tempvalue;
 		
-		temppuzzle[child][zeroposy][zeroposx] = sttpuzzle[sttchild][zeroposy - 1][zeroposx];
-		temppuzzle[child][zeroposy - 1][zeroposx] = 0;
+		temppuzzle[zeroposy][zeroposx] = sttpuzzle[zeroposy - 1][zeroposx];
+		temppuzzle[zeroposy - 1][zeroposx] = 0;
 		
 	}
 	
@@ -96,8 +108,8 @@ class puzzle
 	{
 		int tempvalue;
 		
-		temppuzzle[child][zeroposy][zeroposx] = sttpuzzle[sttchild][zeroposy + 1][zeroposx];
-		temppuzzle[child][zeroposy + 1][zeroposx] = 0;
+		temppuzzle[zeroposy][zeroposx] = sttpuzzle[zeroposy + 1][zeroposx];
+		temppuzzle[zeroposy + 1][zeroposx] = 0;
 		
 	}
 	
@@ -105,8 +117,8 @@ class puzzle
 	{
 		int tempvalue;
 		
-		temppuzzle[child][zeroposy][zeroposx] = sttpuzzle[sttchild][zeroposy][zeroposx - 1];
-		temppuzzle[child][zeroposy][zeroposx - 1] = 0;
+		temppuzzle[zeroposy][zeroposx] = sttpuzzle[zeroposy][zeroposx - 1];
+		temppuzzle[zeroposy][zeroposx - 1] = 0;
 		
 	}
 	
@@ -114,8 +126,8 @@ class puzzle
 	{
 		int tempvalue;
 		
-		temppuzzle[child][zeroposy][zeroposx] = sttpuzzle[sttchild][zeroposy][zeroposx + 1];
-		temppuzzle[child][zeroposy][zeroposx + 1] = 0;
+		temppuzzle[zeroposy][zeroposx] = sttpuzzle[zeroposy][zeroposx + 1];
+		temppuzzle[zeroposy][zeroposx + 1] = 0;
 		
 	}
 	
@@ -126,14 +138,61 @@ class puzzle
 		{
 			for (int j = 0; j<=3; j++)
 			{
-				if (temppuzzle[child][i][j] != endpuzzle[i][j])
+				if (temppuzzle[i][j] != endpuzzle[i][j])
 				{
 					falsedchild++;
 				}
 			}
 		}
-		printf("\nweight = %i",falsedchild);
+		printf("\nweight = %i\n",falsedchild);
+		child++;
 
+	}
+	
+	void childexpander ()
+	{
+		int tiebreaker = 0;
+		
+			if (falsedchild < falsed)
+			{
+				if (tiebreaker != 0)
+				{
+					sttchild = sttchild - tiebreaker;
+					tiebreaker = false;
+				/*	for (int j = 0; j<=3; j++)
+					{
+						for (int k = 0; k<=3; k++)
+						{
+							multchildpuzzle[sttchild][j][k] = sttpuzzle[j][k];
+						
+						}
+					}*/
+				}
+			
+				for (int j = 0; j<=3; j++)
+				{
+					for (int k = 0; k<=3; k++)
+					{
+						sutemp[j][k] = temppuzzle[j][k];
+					}
+				}
+				 falsed =falsedchild;
+				printf("%i",falsedchild);
+				
+			}
+			else if (falsedchild == falsed)
+			{
+				tiebreaker++;
+				for (int j = 0; j<=3; j++)
+				{
+					for (int k = 0; k<=3; k++)
+					{
+						multchildpuzzle[sttchild][j][k] = temppuzzle[j][k];
+						
+					}
+				}
+				sttchild++;
+			}
 	}
 	
 /*	void movechildnum ()
@@ -157,6 +216,57 @@ int main ()
 	pzl.generatetemp();
 	pzl.falsecounter();
 
-	e
-
+	while (pzl.falsed != 0)
+	{
+		if (pzl.zeroposx < 3)
+		{
+			pzl.generatetemp();
+			pzl.rightwards();
+			pzl.createtemppuzzle();
+			pzl.falsecounter();
+			pzl.childexpander();
+		}
+		if (pzl.zeroposx > 0)
+		{
+			pzl.generatetemp();
+			pzl.leftwards();
+			pzl.createtemppuzzle();
+			pzl.falsecounter();
+			pzl.childexpander();
+		}
+		if (pzl.zeroposy < 3)
+		{
+			pzl.generatetemp();
+			pzl.downwards();
+			pzl.createtemppuzzle();
+			pzl.falsecounter();
+			pzl.childexpander();
+		}
+		if (pzl.zeroposy > 0)
+		{
+			pzl.generatetemp();
+			pzl.upwards();
+			pzl.createtemppuzzle();
+			pzl.falsecounter();
+			pzl.childexpander();
+		}
+		pzl.child = 0;
+	
+		
+		for (int j = 0; j<=3; j++)
+				{
+					for (int k = 0; k<=3; k++)
+					{
+						printf("| %i |",	pzl.multchildpuzzle[pzl.sttchild][j][k]);
+						pzl.sttpuzzle[j][k] = pzl.sutemp[j][k];
+						
+					//	printf("| %i |",	pzl.sutemp[j][k]);
+					}
+					printf("\n");
+				}
+		printf("\n\n");
+		pzl.zeroposupdater();
+		pzl.falsed = 0;
+	}
+	
 }
