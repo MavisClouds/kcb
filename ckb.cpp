@@ -5,26 +5,24 @@ class puzzle
 {
 public : 
 
-int sttpuzzle [4][4] = {{0,1,3,4}
-					   ,{5,2,6,8}
-					   ,{9,10,7,11}
-					   ,{13,14,15,12}};
-int temppuzzle [4][4];
-int multichildpuzzle[1000][4][4];
-int sutemp[4][4];
-int endpuzzle [4][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}};
-int zeroposx,zeroposy;
-int child = 0;
-int sttchild = 0;
-int falsed;
-int falsedchild = 16;
-int falsedtempchild[4] = {0,0,0,0};
-int direction = 0;
-int directemp = 0;
-int depth[1000];
-int depthcount=0;
-int counting = 0;
-int checker = 0;
+int sttpuzzle [4][4] = {{5,1,3,4} // state awal
+					   ,{9,2,6,8}
+					   ,{13,10,7,11}
+					   ,{0,14,15,12}};
+int temppuzzle [4][4]; // penyimpan child
+int multichildpuzzle[1000][4][4]; // penyimpan antrian
+int endpuzzle [4][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12},{13,14,15,0}}; // state akhir
+int zeroposx,zeroposy; // penyimpan posisi x dan y pada ruang kosong
+int child = 0; // penentu posisi pada array
+int sttchild = 0; // tempat sementara
+int falsed; // penyimpan kesalahan keping
+int falsedchild = 16; // penyimpan kesalahan keping pada child
+int direction = 0; // penentu arah
+int directemp = 0; // penentu arah pada child
+int depth[1000]; // penyimpan kedalaman
+int depthcount=0; // penyimpan akhir kedalaman
+int counting = 0; // penghitung
+int checker = 0; // pengecek jika berganti cabang
 
 void createpuzzle()
 {
@@ -79,28 +77,6 @@ void generatetemp ()
 		for (int j = 0; j<=3; j++)
 		{
 			temppuzzle[i][j] = sttpuzzle[i][j];
-		}
-	}
-}
-
-void generatestt ()
-{
-	for (int i = 0; i<=3; i++)
-	{
-		for (int j = 0; j<=3; j++)
-		{
-			sttpuzzle[i][j] = temppuzzle[i][j];
-		}
-	}
-}
-
-void chosenstate ()
-{
-	for (int i = 0; i<=3; i++)
-	{
-		for (int j = 0; j<=3; j++)
-		{
-		 sttpuzzle[i][j] = temppuzzle[i][j];
 		}
 	}
 }
@@ -226,7 +202,7 @@ void queue ()
 //penempatan child yang jumlah keping salahnya lebih kecil pada array 0
 	else
 	{
-		checker++;
+		checker++; // menandai jika berganti cabang
 		while (tempchild != 0)
 		{
 			for (int j = 0; j<=3; j++)
@@ -293,25 +269,27 @@ double delta=0.01;    // how much we change our tested ebf each iteration
 int signOfError=0;    // the sign of the difference between N+1 and 1+b+b^2+......+b^d
 double b=0; 
 	
-puzzle pzl;
+puzzle pzl; //inisialisasi kelas dan objek
 
-pzl.createpuzzle();
-pzl.zeroposupdater();
-pzl.generatetemp();
-pzl.falsecounter();
+pzl.createpuzzle(); // mencetak state awal
+pzl.zeroposupdater(); // mengupdate posisi kosong
+pzl.generatetemp(); // mengkopi state awal ke array untuk state sementara
+pzl.falsecounter(); // menghitung jumlah keping yang salah
 
-while (pzl.falsed != 0 )
+while (pzl.falsed != 0 ) // akan terus mengulang sampai keping yang salah = 0
 {
-	pzl.depthcount++;
+	pzl.depthcount++; // menambah kedalaman
+	//membuat child yang bergerak ke kanan
 	if (pzl.zeroposx < 3 && pzl.direction != 2)
 	{
 		int counto = 0;
 		pzl.generatetemp();
-		pzl.rightwards();
-		pzl.createtemppuzzle();
-		pzl.falsecounter();
+		pzl.rightwards(); // penggerakkan ruang kosong ke kanan
+		pzl.createtemppuzzle(); // mencetak child kanan
+		pzl.falsecounter(); 
 	//	pzl.childexpander();
 		pzl.queue();
+		//men-cek jika child yang di generate berada pada awal array
 		for (int j = 0; j<=3; j++)
 		{
 			for (int k = 0; k<=3; k++)
@@ -322,12 +300,15 @@ while (pzl.falsed != 0 )
 				}
 			}
 		}
+		//======================================================================
+		// jika benar maka dilarang untuk bergerak ke kiri untuk pengulangan selanjutnya
 		if (counto == 16)
 		{
 			pzl.directemp = 1;
 		}
 		
 	}
+	//===========================================================================================
 	if (pzl.zeroposx > 0 && pzl.direction != 1)
 	{
 		int counto = 0;
@@ -395,20 +376,19 @@ while (pzl.falsed != 0 )
 				}
 			}
 		}
+			if (counto == 16)
+		{
+			pzl.directemp = 4;
+		}
 	}
-	
+	// men-cek jika cabang berubah
 	if (pzl.checker == 0)
 	{
 		pzl.depthcount = pzl.depth[0];
 	}
-	printf("\ndepth = %i",pzl.depthcount);
-/*	for (int i = 0; i<= 100; i++)
-	{
-		if (pzl.depth[i] == 0)
-		{
-			pzl.depth[counting] = counting;
-		}
-	}*/
+	pzl.checker = 0;
+	printf("\ndepth = %i\n",pzl.depthcount);
+
 	
 	pzl.direction = pzl.directemp;
 	pzl.changestt();
@@ -438,6 +418,7 @@ while (pzl.falsed != 0 )
 	pzl.zeroposupdater();
 	
 }
+// penghitung EBF
 
 while (true) {        // search for b starts here
             // compute the expression 1+b+b^2+......+b^d
@@ -468,7 +449,7 @@ while (true) {        // search for b starts here
             } else
 			{ 
 			// error is small, let's return current estimate
-			printf("\nb = %i",b);
+			printf("\nEffective Branching Factor = %lf",b);
                 return(b);
             }
         }
